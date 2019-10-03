@@ -144,7 +144,11 @@ func (nt neteaseSearchResult) GetUrl(br int) songBean.SongInfo {
 	if br != 990 && br != 320 && br != 192 && br != 128 {
 		br = 320
 	}
-	rs := GetSongUrl([]string{songId}, br)[0]
+	var rs songBean.SongInfo
+	rs = GetSongUrl([]string{songId}, br)[0]
+	if len(rs.SongUrl) < 5 {
+		rs = GetSongUrl([]string{songId}, 128)[0]
+	}
 	rs.SongName = nt.FileName
 	return rs
 }

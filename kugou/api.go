@@ -18,6 +18,8 @@ type kugouSongUrl struct {
 }
 
 type kugouSearchPerResult struct {
+	LQHash     string `json:"FileHash"`
+	LQSize     int    `json:"FileSize"`
 	HQHash     string `json:"HQFileHash"`
 	HQSize     int    `json:"HQFileSize"`
 	SQHash     string `json:"SQFileHash"`
@@ -45,11 +47,19 @@ func (kg kugouSearchPerResult) GetSource() string {
 }
 
 func (kg kugouSearchPerResult) GetUrl(br int) songBean.SongInfo {
+	var rs songBean.SongInfo
 	if br == 990 && kg.SQHash != "" {
-		return GetSongUrl([]string{kg.SQHash})[0]
-	} else {
-		return GetSongUrl([]string{kg.HQHash})[0]
+		rs = GetSongUrl([]string{kg.SQHash})[0]
 	}
+
+	if br == 320 || (br > 320 && len(rs.SongUrl) < 5) {
+		rs = GetSongUrl([]string{kg.HQHash})[0]
+	}
+
+	if br == 192 || len(rs.SongUrl) < 5 {
+		rs = GetSongUrl([]string{kg.LQHash})[0]
+	}
+	return rs
 }
 
 type kugouData struct {
