@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -32,6 +33,7 @@ func Download(url, name, path string) error {
 		log.Println("create file fail:", err.Error())
 		return err
 	}
+	fmt.Println("start download:" + name)
 	buf := make([]byte, 262144)
 	for {
 		len, err := rs.Body.Read(buf)
@@ -39,6 +41,7 @@ func Download(url, name, path string) error {
 		if err != nil {
 			break
 		}
+		fmt.Print(".")
 	}
 	file.Close()
 	rs.Body.Close()

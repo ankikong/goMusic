@@ -16,6 +16,6 @@ func TestSearch(t *testing.T) {
 	rs := Search("claris")
 	fmt.Println(rs)
 	rs[0].GetUrl(320)
-	var val songBean.SongUrl = rs[0]
+	var val songBean.SongData = rs[0]
 	fmt.Println(val.GetUrl(320))
 }

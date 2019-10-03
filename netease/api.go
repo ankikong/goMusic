@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"net/url"
 	"regexp"
 	"strings"
 
@@ -32,13 +33,12 @@ func doHttp(method, Url, data, encryptoMethod string) string {
 	} else {
 		rs = nil
 	}
-	str := new(strings.Builder)
 	if rs != nil {
+		param := url.Values{}
 		for k, v := range rs {
-			str.WriteString(k + "=" + v + "&")
+			param.Add(k, v)
 		}
-		data = str.String()
-		data = data[:len(data)-1]
+		data = param.Encode()
 	}
 	req, _ := http.NewRequest(method, Url, strings.NewReader(data))
 	req.Header.Add("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.90 Safari/537.36")
@@ -119,6 +119,7 @@ type neteaseSearchResult struct {
 	FileName   string
 	ArtistName string
 	AlbumName  string
+	Source     string
 	SongId     int
 }
 
@@ -134,12 +135,18 @@ func (kg neteaseSearchResult) GetAlbumName() string {
 	return kg.AlbumName
 }
 
+func (kg neteaseSearchResult) GetSource() string {
+	return kg.Source
+}
+
 func (nt neteaseSearchResult) GetUrl(br int) songBean.SongInfo {
 	songId := fmt.Sprint(nt.SongId)
 	if br != 990 && br != 320 && br != 192 && br != 128 {
 		br = 320
 	}
-	return GetSongUrl([]string{songId}, br)[0]
+	rs := GetSongUrl([]string{songId}, br)[0]
+	rs.SongName = nt.FileName
+	return rs
 }
 
 func Search(text string) []neteaseSearchResult {
@@ -154,6 +161,7 @@ func Search(text string) []neteaseSearchResult {
 	var tmpAns neteaseSearch
 	err := json.Unmarshal([]byte(ans), &tmpAns)
 	if err != nil {
+		log.Println(ans)
 		log.Println(err)
 	}
 	ansRet := make([]neteaseSearchResult, len(tmpAns.Result.Results))
@@ -169,8 +177,9 @@ func Search(text string) []neteaseSearchResult {
 		if len(tmpName) > 1 {
 			tmpName = tmpName[:len(tmpName)-1]
 		}
+		ansRet[index].Source = "netease"
 		ansRet[index].ArtistName = tmpName
-		ansRet[index].FileName = result.SongName
+		ansRet[index].FileName = tmpName + " - " + result.SongName
 		ansRet[index].SongId = result.SongId
 		index++
 	}

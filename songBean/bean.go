@@ -19,4 +19,6 @@ type SongData interface {
 	GetArtistName() string
 	// 获取歌单名字
 	GetAlbumName() string
+	// 获取歌曲来源
+	GetSource() string
 }

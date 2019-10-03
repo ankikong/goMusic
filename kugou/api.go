@@ -25,6 +25,7 @@ type kugouSearchPerResult struct {
 	FileName   string `json:"FileName"`
 	ArtistName string `json:"SingerName"`
 	AlbumName  string `json:"AlbumName"`
+	Source     string
 }
 
 func (kg kugouSearchPerResult) GetFileName() string {
@@ -37,6 +38,10 @@ func (kg kugouSearchPerResult) GetArtistName() string {
 
 func (kg kugouSearchPerResult) GetAlbumName() string {
 	return kg.AlbumName
+}
+
+func (kg kugouSearchPerResult) GetSource() string {
+	return kg.Source
 }
 
 func (kg kugouSearchPerResult) GetUrl(br int) songBean.SongInfo {
@@ -84,7 +89,10 @@ func GetSongUrl(ids []string) []songBean.SongInfo {
 		ansRet[index].SongBr = song.SongBr
 		ansRet[index].SongName = song.SongName
 		ansRet[index].SongSize = song.SongSize
-		ansRet[index].SongUrl = song.Urls[0]
+
+		if len(song.Urls) > 0 {
+			ansRet[index].SongUrl = song.Urls[0]
+		}
 		index++
 	}
 	return ansRet
@@ -96,5 +104,8 @@ func Search(word string) []kugouSearchPerResult {
 	// fmt.Println(string(rs))
 	var ans kugouSearchResult
 	json.Unmarshal(rs, &ans)
+	for i := 0; i < len(ans.Data.List); i++ {
+		ans.Data.List[i].Source = "KuGou"
+	}
 	return ans.Data.List
 }

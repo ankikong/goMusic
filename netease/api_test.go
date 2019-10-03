@@ -5,8 +5,6 @@ import (
 	"math/big"
 	"regexp"
 	"testing"
-
-	"github.com/ankikong/goMusic/songBean"
 )
 
 func TestRsaEncrypt(t *testing.T) {
@@ -70,10 +68,10 @@ func TestExp(t *testing.T) {
 }
 
 func TestSearch(t *testing.T) {
-	rs := Search("claris")
+	rs := Search("トゥルーエンド プレイヤー")
 	fmt.Println(rs)
-	var val songBean.SongData = rs[0]
-	fmt.Println(val.GetUrl(320))
+	// var val songBean.SongData = rs[0]
+	// fmt.Println(val.GetUrl(320))
 }
 
 // func TestAesEncryptCBC(t *testing.T) {

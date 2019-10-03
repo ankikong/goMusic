@@ -25,12 +25,12 @@ func search(text string) {
 	}
 	t := table.NewWriter()
 	t.SetOutputMirror(os.Stdout)
-	t.AppendHeader(table.Row{"编号", "歌名", "歌手", "专辑"})
+	t.AppendHeader(table.Row{"编号", "歌名", "歌手", "专辑", "来源"})
 	// fmt.Println("歌名\t歌手\t专辑")
 	// fmt.Printf("%-26s%-26s%-26s\n", "歌名", "歌手", "专辑")
 	index := 0
 	for _, rs := range result {
-		t.AppendRow(table.Row{index, rs.GetFileName(), rs.GetArtistName(), rs.GetAlbumName()})
+		t.AppendRow(table.Row{index, rs.GetFileName(), rs.GetArtistName(), rs.GetAlbumName(), rs.GetSource()})
 		index++
 		// fmt.Printf("%-26s%-26s%-26s\n", rs.GetFileName(), rs.GetArtistName(), rs.GetAlbumName())
 	}
