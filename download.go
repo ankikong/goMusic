@@ -17,6 +17,11 @@ func Download(url, name, path string) error {
 	tmp := strings.Split(url, ".")
 	ext := tmp[len(tmp)-1]
 	name = name + "." + ext
+	// reg, _ := regexp.Compile(`(/\|<>:*?")`)
+	for _, i := range `/\|<>:*?"` {
+		name = strings.ReplaceAll(name, string(i), " ")
+	}
+
 	rs, err := http.Get(url)
 	if err != nil {
 		log.Println("download fail:", err.Error())

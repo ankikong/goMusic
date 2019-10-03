@@ -63,11 +63,18 @@ func search(text string) {
 func GetByNeteaseId(url string) {
 	reg, _ := regexp.Compile(`\Wid=\d+`)
 	ids := reg.FindAllString(url, -1)
+	var id string
 	if len(ids) == 0 {
-		fmt.Println("输入错误")
-		return
+		tmp := strings.Split(url, "/")
+		for _, i := range tmp {
+			if _, err := strconv.ParseInt(i, 10, 32); err == nil {
+				id = i
+				break
+			}
+		}
+	} else {
+		id = ids[0][4:]
 	}
-	id := ids[0][4:]
 	rs := netease.GetSongUrl([]string{fmt.Sprint(id)}, 320)[0]
 	fmt.Println("开始下载:", rs.SongName)
 	Download(rs.SongUrl, rs.SongName, "")

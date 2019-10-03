@@ -7,12 +7,13 @@ GOGET=$(GOCMD) get
 
 RELEASE_VERSION=V0.0.1
 BINARY_NAME=goMusic-$(RELEASE_VERSION)
+LOCAL_BINARY_NAME=goMusic
 BINARY_DIR=bin
 
 
 all: test build
 build: 
-		$(GOBUILD) -o $(BINARY_DIR)/$(BINARY_NAME).exe -v
+		$(GOBUILD) -o E:/cmd/$(LOCAL_BINARY_NAME).exe -v
 test: 
 		$(GOTEST) -v ./...
 clean: 
