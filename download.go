@@ -15,8 +15,14 @@ func Download(url, name, path string) error {
 	} else if path[len(path)-1] != '/' {
 		path = path + "/"
 	}
-	tmp := strings.Split(url, ".")
-	ext := tmp[len(tmp)-1]
+	var ext string
+	if strings.Contains(url, "mp3") {
+		ext = "mp3"
+	} else if strings.Contains(url, "flac") {
+		ext = "flac"
+	} else if strings.Contains(url, "aac") {
+		ext = "aac"
+	}
 	name = name + "." + ext
 	// reg, _ := regexp.Compile(`(/\|<>:*?")`)
 	for _, i := range `/\|<>:*?"` {

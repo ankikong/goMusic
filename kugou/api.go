@@ -1,6 +1,7 @@
 package kugou
 
 import (
+	"bytes"
 	"crypto/md5"
 	"encoding/hex"
 	"encoding/json"
@@ -82,9 +83,16 @@ func doGet(url string) []byte {
 		return nil
 	}
 	defer rs.Body.Close()
-	tmpBuf := make([]byte, 65536)
-	len, _ := rs.Body.Read(tmpBuf)
-	return tmpBuf[:len]
+	buf := new(bytes.Buffer)
+	tmpBuf := make([]byte, 4096)
+	for {
+		len, err := rs.Body.Read(tmpBuf)
+		buf.Write(tmpBuf[:len])
+		if err != nil {
+			break
+		}
+	}
+	return buf.Bytes()
 }
 
 func GetSongUrl(ids []string) []songBean.SongInfo {

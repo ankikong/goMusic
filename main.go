@@ -8,6 +8,8 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/ankikong/goMusic/qq"
+
 	"github.com/ankikong/goMusic/kugou"
 	"github.com/ankikong/goMusic/songBean"
 
@@ -21,6 +23,9 @@ func search(text string) {
 		result = append(result, rs)
 	}
 	for _, rs := range kugou.Search(text) {
+		result = append(result, rs)
+	}
+	for _, rs := range qq.Search(text) {
 		result = append(result, rs)
 	}
 	t := table.NewWriter()
@@ -57,7 +62,7 @@ func search(text string) {
 	}
 	rss := result[num].GetUrl(320)
 	fmt.Println(rss.SongUrl)
-	Download(rss.SongUrl, rss.SongName, "")
+	Download(rss.SongUrl, result[num].GetFileName(), "")
 }
 
 func GetByNeteaseId(url string) {
@@ -80,6 +85,21 @@ func GetByNeteaseId(url string) {
 	Download(rs.SongUrl, rs.SongName, "")
 }
 
+func GetByQQId(url string) {
+	reg, _ := regexp.Compile(`songid=\d+`)
+	ids := reg.FindAllString(url, -1)
+	var id string
+	if len(ids) != 0 {
+		id = ids[0][7:]
+	} else {
+		fmt.Println("error: ", url)
+		return
+	}
+	rs := qq.GetSongUrl(id)
+	fmt.Println("开始下载", rs.SongName)
+	Download(rs.SongUrl, rs.SongName, "")
+}
+
 func main() {
 	var (
 		url     string
@@ -93,6 +113,10 @@ func main() {
 	} else {
 		if strings.Contains(url, "music.163.com") {
 			GetByNeteaseId(url)
+		} else if strings.Contains(url, "qq.com") {
+			GetByQQId(url)
+		} else {
+
 		}
 	}
 }

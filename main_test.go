@@ -22,8 +22,13 @@ type tt struct {
 
 func TestSearch(t *testing.T) {
 	a := new(tt)
-	a.Key = "你好"
+	a.Key = "claris"
 	rs, _ := json.Marshal(a)
 	fmt.Println(string(rs), rs)
 	// search("トゥルーエンド プレイヤー")
+}
+
+func TestQQId(t *testing.T) {
+	GetByQQId("https://y.qq.com/n/yqq/song/0031Jhwu0ryf6Q.html")
+	// GetByQQId("https://i.y.qq.com/v8/playsong.html?songid=105603683&source=yqq#wechat_redirect")
 }
