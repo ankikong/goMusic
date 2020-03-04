@@ -13,7 +13,7 @@ BINARY_DIR=bin
 
 all: test build
 build: 
-		$(GOBUILD) -o E:/cmd/$(LOCAL_BINARY_NAME).exe -v
+		$(GOBUILD) -o D:/cmd/$(LOCAL_BINARY_NAME).exe
 test: 
 		$(GOTEST) -v ./...
 clean: 
@@ -31,19 +31,19 @@ deps:
 
 # windows
 build-win64:
-		CGO_ENABLED=0 GOOS=windows GOARCH=amd64 $(GOBUILD) -o $(BINARY_DIR)/$(BINARY_NAME)_win64.exe -v
+		CGO_ENABLED=0 GOOS=windows GOARCH=amd64 $(GOBUILD) -o $(BINARY_DIR)/$(BINARY_NAME)_win64.exe
 build-win32:
-		CGO_ENABLED=0 GOOS=windows GOARCH=386 $(GOBUILD) -o $(BINARY_DIR)/$(BINARY_NAME)_win32.exe -v
+		CGO_ENABLED=0 GOOS=windows GOARCH=386 $(GOBUILD) -o $(BINARY_DIR)/$(BINARY_NAME)_win32.exe
 
 # Linux
 build-linux-amd64:
-		CGO_ENABLED=0 GOOS=linux GOARCH=amd64 $(GOBUILD) -o $(BINARY_DIR)/$(BINARY_NAME)_linux_amd64 -v
+		CGO_ENABLED=0 GOOS=linux GOARCH=amd64 $(GOBUILD) -o $(BINARY_DIR)/$(BINARY_NAME)_linux_amd64
 build-linux-X86:
-		CGO_ENABLED=0 GOOS=linux GOARCH=386 $(GOBUILD) -o $(BINARY_DIR)/$(BINARY_NAME)_linux_X86 -v
+		CGO_ENABLED=0 GOOS=linux GOARCH=386 $(GOBUILD) -o $(BINARY_DIR)/$(BINARY_NAME)_linux_X86
 build-linux-arm64:
-		CGO_ENABLED=0 GOOS=linux GOARCH=arm64 $(GOBUILD) -o $(BINARY_DIR)/$(BINARY_NAME)_linux_arm64 -v
+		CGO_ENABLED=0 GOOS=linux GOARCH=arm64 $(GOBUILD) -o $(BINARY_DIR)/$(BINARY_NAME)_linux_arm64
 build-linux-armV7:
-		CGO_ENABLED=0 GOOS=linux GOARCH=arm GOARM=7 $(GOBUILD) -o $(BINARY_DIR)/$(BINARY_NAME)_linux_armV7 -v
+		CGO_ENABLED=0 GOOS=linux GOARCH=arm GOARM=7 $(GOBUILD) -o $(BINARY_DIR)/$(BINARY_NAME)_linux_armV7
 
 # Mac
 build-darwin-X86:

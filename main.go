@@ -11,14 +11,14 @@ import (
 	"github.com/ankikong/goMusic/qq"
 
 	"github.com/ankikong/goMusic/kugou"
-	"github.com/ankikong/goMusic/songBean"
+	"github.com/ankikong/goMusic/songbean"
 
 	"github.com/ankikong/goMusic/netease"
 	"github.com/jedib0t/go-pretty/table"
 )
 
 func search(text string) {
-	var result []songBean.SongData
+	var result []songbean.SongData
 	for _, rs := range netease.Search(text) {
 		result = append(result, rs)
 	}
@@ -60,17 +60,17 @@ func search(text string) {
 		num = nums
 		break
 	}
-	rss := result[num].GetUrl(320)
-	fmt.Println(rss.SongUrl)
-	Download(rss.SongUrl, result[num].GetFileName(), "")
+	rss := result[num].GetURL(320)
+	fmt.Println(rss.SongURL)
+	Download(rss.SongURL, result[num].GetFileName(), "")
 }
 
-func GetByNeteaseId(url string) {
+func GetByNeteaseId(URL string) {
 	reg, _ := regexp.Compile(`\Wid=\d+`)
-	ids := reg.FindAllString(url, -1)
+	ids := reg.FindAllString(URL, -1)
 	var id string
 	if len(ids) == 0 {
-		tmp := strings.Split(url, "/")
+		tmp := strings.Split(URL, "/")
 		for _, i := range tmp {
 			if _, err := strconv.ParseInt(i, 10, 32); err == nil {
 				id = i
@@ -80,41 +80,41 @@ func GetByNeteaseId(url string) {
 	} else {
 		id = ids[0][4:]
 	}
-	rs := netease.GetSongUrl([]string{fmt.Sprint(id)}, 320)[0]
+	rs := netease.GetSongURL([]string{fmt.Sprint(id)}, 320)[0]
 	fmt.Println("开始下载:", rs.SongName)
-	Download(rs.SongUrl, rs.SongName, "")
+	Download(rs.SongURL, rs.SongName, "")
 }
 
-func GetByQQId(url string) {
+func GetByQQId(URL string) {
 	reg, _ := regexp.Compile(`songid=\d+`)
-	ids := reg.FindAllString(url, -1)
+	ids := reg.FindAllString(URL, -1)
 	var id string
 	if len(ids) != 0 {
 		id = ids[0][7:]
 	} else {
-		fmt.Println("error: ", url)
+		fmt.Println("error: ", URL)
 		return
 	}
-	rs := qq.GetSongUrl(id)
+	rs := qq.GetSongURL(id)
 	fmt.Println("开始下载", rs.SongName)
-	Download(rs.SongUrl, rs.SongName, "")
+	Download(rs.SongURL, rs.SongName, "")
 }
 
 func main() {
 	var (
-		url     string
+		URL     string
 		keyword string
 	)
-	flag.StringVar(&url, "url", "", "url of song")
+	flag.StringVar(&URL, "url", "", "url of song")
 	flag.StringVar(&keyword, "kw", "", "search keyword")
 	flag.Parse()
 	if len(keyword) > 0 {
 		search(keyword)
 	} else {
-		if strings.Contains(url, "music.163.com") {
-			GetByNeteaseId(url)
-		} else if strings.Contains(url, "qq.com") {
-			GetByQQId(url)
+		if strings.Contains(URL, "music.163.com") {
+			GetByNeteaseId(URL)
+		} else if strings.Contains(URL, "qq.com") {
+			GetByQQId(URL)
 		} else {
 
 		}
