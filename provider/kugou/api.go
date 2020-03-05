@@ -1,14 +1,11 @@
 package kugou
 
 import (
-	"bytes"
-	"crypto/md5"
-	"encoding/hex"
 	"encoding/json"
-	"log"
-	"net/http"
 
-	"github.com/ankikong/goMusic/songbean"
+	"github.com/ankikong/goMusic/tool"
+
+	"github.com/ankikong/goMusic/provider/songbean"
 )
 
 type kugouSongURL struct {
@@ -18,7 +15,8 @@ type kugouSongURL struct {
 	SongName string   `json:"fileName"`
 }
 
-type kugouSearchPerResult struct {
+// SearchResult 酷狗搜索的结果
+type SearchResult struct {
 	LQHash     string `json:"FileHash"`
 	LQSize     int    `json:"FileSize"`
 	HQHash     string `json:"HQFileHash"`
@@ -31,23 +29,28 @@ type kugouSearchPerResult struct {
 	Source     string
 }
 
-func (kg kugouSearchPerResult) GetFileName() string {
+// GetFileName 生成歌曲文件名
+func (kg SearchResult) GetFileName() string {
 	return kg.FileName
 }
 
-func (kg kugouSearchPerResult) GetArtistName() string {
+// GetArtistName 获取歌手名字
+func (kg SearchResult) GetArtistName() string {
 	return kg.ArtistName
 }
 
-func (kg kugouSearchPerResult) GetAlbumName() string {
+// GetAlbumName 获取专辑名
+func (kg SearchResult) GetAlbumName() string {
 	return kg.AlbumName
 }
 
-func (kg kugouSearchPerResult) GetSource() string {
+// GetSource 获取来源
+func (kg SearchResult) GetSource() string {
 	return kg.Source
 }
 
-func (kg kugouSearchPerResult) GetURL(br int) songbean.SongInfo {
+// GetURL 搜索结果中是不包含歌曲链接的，所以要获取链接就必须调用此方法
+func (kg SearchResult) GetURL(br int) songbean.SongInfo {
 	var rs songbean.SongInfo
 	if br == 990 && kg.SQHash != "" {
 		rs = GetSongURL([]string{kg.SQHash})[0]
@@ -64,46 +67,28 @@ func (kg kugouSearchPerResult) GetURL(br int) songbean.SongInfo {
 }
 
 type kugouData struct {
-	List []kugouSearchPerResult `json:"lists"`
+	List []SearchResult `json:"lists"`
 }
 type kugouSearchResult struct {
 	Data kugouData
 }
 
-func MD5(text string) string {
-	data := []byte(text)
-	hash := md5.Sum(data)
-	return hex.EncodeToString(hash[:])
-}
-
-func doGet(URL string) []byte {
-	rs, err := http.Get(URL)
-	if err != nil {
-		log.Println(err)
-		return nil
-	}
-	defer rs.Body.Close()
-	buf := new(bytes.Buffer)
-	tmpBuf := make([]byte, 4096)
-	for {
-		len, err := rs.Body.Read(tmpBuf)
-		buf.Write(tmpBuf[:len])
-		if err != nil {
-			break
-		}
-	}
-	return buf.Bytes()
-}
-
+// GetSongURL 根据id来获取歌曲链接
 func GetSongURL(ids []string) []songbean.SongInfo {
 	ansRet := make([]songbean.SongInfo, len(ids))
 	index := 0
 	for _, id := range ids {
-		tmpHash := MD5(id + "kgcloudv2")
+		tmpHash := tool.MD5(id + "kgcloudv2")
 		api := `http://trackercdn.kugou.com/i/v2/?key=` + tmpHash + `&hash=` + id + `&br=hq&appid=1005&pid=2&cmd=25&behavior=play`
-		tmpBuf := doGet(api)
+		tmpBuf, err := tool.DoHTTP("GET", api, "", "", "", "")
+		if err != nil {
+			return nil
+		}
 		var song kugouSongURL
-		json.Unmarshal(tmpBuf, &song)
+		err = json.Unmarshal([]byte(tmpBuf), &song)
+		if err != nil {
+			return nil
+		}
 		ansRet[index].SongBr = song.SongBr
 		ansRet[index].SongName = song.SongName
 		ansRet[index].SongSize = song.SongSize
@@ -116,12 +101,16 @@ func GetSongURL(ids []string) []songbean.SongInfo {
 	return ansRet
 }
 
-func Search(word string) []kugouSearchPerResult {
+// Search 根据word搜索
+func Search(word string) (ret []SearchResult) {
+	ret = *new([]SearchResult)
 	URL := `http://songsearch.kugou.com/song_search_v2?pagesize=5&keyword=` + word
-	rs := doGet(URL)
-	// fmt.Println(string(rs))
+	rs, err := tool.DoHTTP("GET", URL, "", "", "", "")
+	if err != nil {
+		return
+	}
 	var ans kugouSearchResult
-	json.Unmarshal(rs, &ans)
+	err = json.Unmarshal([]byte(rs), &ans)
 	for i := 0; i < len(ans.Data.List); i++ {
 		ans.Data.List[i].Source = "KuGou"
 	}

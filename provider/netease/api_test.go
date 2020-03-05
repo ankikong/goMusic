@@ -16,12 +16,8 @@ import (
 func TestWeapi(t *testing.T) {
 	// http://music.163.com/weapi/song/enhance/player/url?csrf_token=
 	testInput := `{"ids":["28528420","347230"],"br":320000,"csrf_token":""}`
-	param, err := weapi(testInput)
-	if err != nil {
-		t.Error(err)
-	} else {
-		fmt.Println(param)
-	}
+	param := weapi(testInput)
+	fmt.Println(param)
 }
 
 func TestLinuxApi(t *testing.T) {

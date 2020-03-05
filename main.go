@@ -8,12 +8,16 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/ankikong/goMusic/qq"
+	"github.com/ankikong/goMusic/tool"
 
-	"github.com/ankikong/goMusic/kugou"
-	"github.com/ankikong/goMusic/songbean"
+	"github.com/ankikong/goMusic/provider/bilibili"
 
-	"github.com/ankikong/goMusic/netease"
+	"github.com/ankikong/goMusic/provider/qq"
+
+	"github.com/ankikong/goMusic/provider/kugou"
+	"github.com/ankikong/goMusic/provider/songbean"
+
+	"github.com/ankikong/goMusic/provider/netease"
 	"github.com/jedib0t/go-pretty/table"
 )
 
@@ -62,7 +66,7 @@ func search(text string) {
 	}
 	rss := result[num].GetURL(320)
 	fmt.Println(rss.SongURL)
-	Download(rss.SongURL, result[num].GetFileName(), "")
+	tool.Download(rss.SongURL, result[num].GetFileName(), "")
 }
 
 func GetByNeteaseId(URL string) {
@@ -82,7 +86,7 @@ func GetByNeteaseId(URL string) {
 	}
 	rs := netease.GetSongURL([]string{fmt.Sprint(id)}, 320)[0]
 	fmt.Println("开始下载:", rs.SongName)
-	Download(rs.SongURL, rs.SongName, "")
+	tool.Download(rs.SongURL, rs.SongName, "")
 }
 
 func GetByQQId(URL string) {
@@ -95,9 +99,9 @@ func GetByQQId(URL string) {
 		fmt.Println("error: ", URL)
 		return
 	}
-	rs := qq.GetSongURL(id)
+	rs := qq.GetSongURL(id, "320")
 	fmt.Println("开始下载", rs.SongName)
-	Download(rs.SongURL, rs.SongName, "")
+	tool.Download(rs.SongURL, rs.SongName, "")
 }
 
 func main() {
@@ -115,8 +119,8 @@ func main() {
 			GetByNeteaseId(URL)
 		} else if strings.Contains(URL, "qq.com") {
 			GetByQQId(URL)
-		} else {
-
+		} else if strings.Contains(URL, "bilibili") {
+			bilibili.Deal(URL)
 		}
 	}
 }

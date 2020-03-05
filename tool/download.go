@@ -5,6 +5,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"strings"
 )
@@ -57,7 +58,7 @@ func Download(url, name, path string) error {
 }
 
 // DoHTTP 以method发起对URL的请求
-func DoHTTP(method, URL, data, encryptoMethod, dataFormat, origin, referer string) (string, err error) {
+func DoHTTP(method, URL, data, dataFormat, origin, referer string) (ret string, err error) {
 
 	req, _ := http.NewRequest(method, URL, strings.NewReader(data))
 	req.Header.Add("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.90 Safari/537.36")
@@ -83,13 +84,22 @@ func DoHTTP(method, URL, data, encryptoMethod, dataFormat, origin, referer strin
 	for {
 		leng, ierr := res.Body.Read(tmpBuf)
 		resString.Write(tmpBuf[:leng])
-		if err == io.EOF {
+		if ierr == io.EOF {
 			break
-		} else {
+		} else if ierr != nil {
 			err = ierr
 			return
 		}
 	}
 	return resString.String(), nil
 
+}
+
+// MapToURLParams 将map转换为url参数格式
+func MapToURLParams(in map[string]string) (ret string) {
+	param := url.Values{}
+	for k, v := range in {
+		param.Add(k, v)
+	}
+	return param.Encode()
 }

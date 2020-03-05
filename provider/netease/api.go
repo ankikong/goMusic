@@ -32,7 +32,7 @@ const (
 
 // module
 
-func weapi(text string) (rs map[string]string, err error) {
+func weapi(text string) (rs map[string]string) {
 	secretKey := make([]byte, 16)
 	for i := 0; i < 16; i++ {
 		secretKey[i] = byte(base62[rand.Int31n(62)])
@@ -46,7 +46,7 @@ func weapi(text string) (rs map[string]string, err error) {
 	data := tool.RsaEncrypt(secretKey, modulus)
 	rs = make(map[string]string)
 	rs["params"], rs["encSecKey"] = param, data
-	return rs, nil
+	return rs
 }
 
 func linuxAPI(text string) map[string]string {
@@ -71,7 +71,7 @@ type neteaseSongRes struct {
 func doHTTP(method, URL, data, encryptoMethod string) string {
 	rs := make(map[string]string)
 	if encryptoMethod == "web" {
-		rs, _ = weapi(data)
+		rs = weapi(data)
 	} else if encryptoMethod == "linux" {
 		rs = linuxAPI(data)
 	} else {
@@ -115,14 +115,25 @@ func doHTTP(method, URL, data, encryptoMethod string) string {
 func GetSongURL(ids []string, br int) []songbean.SongInfo {
 	input := `{"method":"POST","url":"https://music.163.com/api/song/enhance/player/url","params":{"ids":"[` +
 		strings.Join(ids, ",") + `]","br":` + fmt.Sprintf("%d", br*1000) + `}}`
-	rs := doHTTP("POST", "https://music.163.com/api/linux/forward", input, "linux")
+	// rs := doHTTP("POST", "https://music.163.com/api/linux/forward", input, "linux")
+
+	postData := tool.MapToURLParams(linuxAPI(input))
+
+	rs, err := tool.DoHTTP("POST", "https://music.163.com/api/linux/forward", postData, "application/x-www-form-urlencoded", "https://music.163.com", "")
+	if err != nil {
+		return nil
+	}
 	var ans neteaseSongRes
 	json.Unmarshal([]byte(rs), &ans)
 	ansRet := make([]songbean.SongInfo, len(ids))
 	reg, _ := regexp.Compile(`"title": "[^"]+`)
 	index := 0
 	for _, id := range ids {
-		tmpRs := doHTTP("GET", "https://music.163.com/song?id="+id, "", "null")
+		// tmpRs := doHTTP("GET", "https://music.163.com/song?id="+id, "", "null")
+		tmpRs, err := tool.DoHTTP("GET", "https://music.163.com/song?id="+id, "", "", "", "https://music.163.com")
+		if err != nil {
+			return nil
+		}
 		songname := reg.FindAllString(tmpRs, 1)[0][10:]
 		ansRet[index].SongBr = ans.Data[index].Br
 		ansRet[index].SongURL = ans.Data[index].URL
@@ -212,9 +223,11 @@ func Search(text string) []SearchResult {
 	query.Limit = 10
 	query.Offset = 0
 	rs, _ := json.Marshal(query)
-	ans := doHTTP("POST", "https://music.163.com/weapi/search/get", string(rs), "web")
+	// ans := doHTTP("POST", "https://music.163.com/weapi/search/get", string(rs), "web")
+	postData := tool.MapToURLParams(weapi(string(rs)))
+	ans, err := tool.DoHTTP("POST", "https://music.163.com/weapi/search/get", postData, "application/x-www-form-urlencoded", "https://music.163.com", "")
 	var tmpAns neteaseSearch
-	err := json.Unmarshal([]byte(ans), &tmpAns)
+	err = json.Unmarshal([]byte(ans), &tmpAns)
 	if err != nil {
 		log.Println(ans)
 		log.Println(err)
