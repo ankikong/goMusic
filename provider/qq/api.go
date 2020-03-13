@@ -10,10 +10,11 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/ankikong/goMusic/tool"
-
 	"github.com/ankikong/goMusic/provider/songbean"
 )
+
+// {'origin': 'https://y.qq.com', 'referer': 'https://y.qq.com/portal/search.html'}
+// wait to fix, need cookies
 
 type qqVkeyStruct struct {
 	Data struct {
@@ -109,6 +110,7 @@ func doGet(url string) []byte {
 }
 
 func getVkey(mid string) string {
+	// cid=205361747&filename=M8000031Jhwu0ryf6Q.mp3&format=json&guid=123456789&loginUin=3051522991&needNewCode=0&platform=yqq&songmid=0031Jhwu0ryf6Q&uin=3051522991
 	_api := "http://c.y.qq.com/base/fcgi-bin/fcg_music_express_mobile3.fcg?" +
 		"g_tk=1722049047&loginUin=956581739&needNewCode=0&cid=205361747" +
 		"&uin=323&songmid=%s&filename=M500%s.mp3&guid=11451466"
@@ -164,23 +166,23 @@ func GetSongURL(songMid, br string) songbean.SongInfo {
 	ret.SongBr = 128
 	ret.SongName = tmpName + " - " + ans.SongName
 	ret.SongSize = 0
-	// vkey := getVkey(ans.SongMid)
-	// ret.SongURL = fmt.Sprintf("http://122.226.161.16/amobile.music.tc.qq.com/M500%s.mp3?vkey=%s&guid=11451466&uin=323&fromtag=66", ans.SongMid, vkey)
-	// return *ret
-	url := fmt.Sprintf("https://api.qq.jsososo.com/song/url?type=%s&id=%s", br, songMid)
-	rss, err = tool.DoHTTP("GET", url, "", "", "", "")
-	if err != nil {
-
-	} else {
-		var data qqMusicURLData
-		err = json.Unmarshal([]byte(rss), &data)
-		if err != nil || data.Code != 100 {
-
-		} else {
-			ret.SongURL = data.URL
-		}
-	}
+	vkey := getVkey(ans.SongMid)
+	ret.SongURL = fmt.Sprintf("http://122.226.161.16/amobile.music.tc.qq.com/M500%s.mp3?vkey=%s&guid=11451466&uin=323&fromtag=66", ans.SongMid, vkey)
 	return *ret
+	// url := fmt.Sprintf("https://api.qq.jsososo.com/song/url?type=%s&id=%s", br, songMid)
+	// rss, err = tool.DoHTTP("GET", url, "", "", "", "")
+	// if err != nil {
+
+	// } else {
+	// 	var data qqMusicURLData
+	// 	err = json.Unmarshal([]byte(rss), &data)
+	// 	if err != nil || data.Code != 100 {
+
+	// 	} else {
+	// 		ret.SongURL = data.URL
+	// 	}
+	// }
+	// return *ret
 }
 
 type qqMusicSearchResults struct {

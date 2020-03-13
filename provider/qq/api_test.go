@@ -8,7 +8,7 @@ import (
 )
 
 func TestGetVkey(t *testing.T) {
-	fmt.Println(GetSongURL("105603683", "320"))
+	// fmt.Println(GetSongURL("105603683", "320"))
 	fmt.Println(GetSongURL("0031Jhwu0ryf6Q", "320"))
 }
 

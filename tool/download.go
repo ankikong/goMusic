@@ -7,7 +7,10 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"strconv"
 	"strings"
+
+	"github.com/cheggaaa/pb/v3"
 )
 
 // Download 下载url的文件到路径path
@@ -18,13 +21,13 @@ func Download(url, name, path string) error {
 	} else if path[len(path)-1] != '/' {
 		path = path + "/"
 	}
+	exts := []string{"mp3", "flac", "acc", "flv", "mp4"}
 	var ext string
-	if strings.Contains(url, "mp3") {
-		ext = "mp3"
-	} else if strings.Contains(url, "flac") {
-		ext = "flac"
-	} else if strings.Contains(url, "aac") {
-		ext = "aac"
+	for _, j := range exts {
+		if strings.Contains(url, j) {
+			ext = j
+			break
+		}
 	}
 	name = name + "." + ext
 	// reg, _ := regexp.Compile(`(/\|<>:*?")`)
@@ -33,27 +36,38 @@ func Download(url, name, path string) error {
 	}
 
 	rs, err := http.Get(url)
+
 	if err != nil {
 		log.Println("download fail:", err.Error())
 		return err
 	}
+
 	file, err := os.Create(path + name)
 	if err != nil {
 		log.Println("create file fail:", err.Error())
 		return err
 	}
-	fmt.Println("start download:" + name)
-	buf := make([]byte, 262144)
-	for {
-		len, err := rs.Body.Read(buf)
-		file.Write(buf[:len])
-		if err != nil {
-			break
+
+	lng, err := strconv.ParseInt(rs.Header.Get("content-length"), 0, 60)
+	if err != nil {
+		fmt.Println("start download(unknown size):" + name)
+		buf := make([]byte, 262144)
+		for {
+			len, err := rs.Body.Read(buf)
+			file.Write(buf[:len])
+			if err != nil {
+				break
+			}
+			fmt.Print(".")
 		}
-		fmt.Print(".")
+	} else {
+		bar := pb.Full.Start64(lng)
+		barReader := bar.NewProxyReader(rs.Body)
+		io.Copy(file, barReader)
+		bar.Finish()
 	}
-	file.Close()
 	rs.Body.Close()
+	file.Close()
 	return nil
 }
 

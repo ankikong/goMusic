@@ -14,10 +14,12 @@ import (
 )
 
 const (
+	params    = "otype=json&qn=80&quality=80&type=&platform=flash&cid=%s&appkey=%s"
 	url       = "https://interface.bilibili.com/v2/playurl?"
 	appkey    = "iVGUTjsxvpLeuDCf"
 	secretKey = "aHRmhWMLkdeMuILqORnYZocwMBpMEOdt"
-	params    = "otype=json&qn=80&quality=80&type=&platform=flash&cid=%s&appkey=%s"
+	// appkey    = "84956560bc028eb7"
+	// secretKey = "42fbb979aa742013d713a088f912673b"
 )
 
 // Pages 记录一个av下有分p的信息

@@ -120,7 +120,13 @@ func main() {
 		} else if strings.Contains(URL, "qq.com") {
 			GetByQQId(URL)
 		} else if strings.Contains(URL, "bilibili") {
-			bilibili.Deal(URL)
+			if strings.Contains(URL, "video") {
+				bilibili.Deal(URL)
+			} else if strings.Contains(URL, "bangumi") {
+				bilibili.BangumiDeal(URL)
+			} else {
+				fmt.Println("unsupport url")
+			}
 		}
 	}
 }

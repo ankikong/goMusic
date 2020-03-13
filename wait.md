@@ -8,3 +8,8 @@
 ## kuwo
 
 `http://antiserver.kuwo.cn/anti.s?type=convert_url&format=mp3&response=url&rid=MUSIC_6949578`
+
+## QQ
+
+`https://api.qq.jsososo.com/song?songmid=`
+`https://api.qq.jsososo.com/lyric?songmid=`
