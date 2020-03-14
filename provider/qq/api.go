@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/ankikong/goMusic/tool"
 	"log"
 	"net/http"
 	"regexp"
@@ -100,8 +101,8 @@ func doGet(url string) []byte {
 	buf := new(bytes.Buffer)
 	tmpBuf := make([]byte, 4096)
 	for {
-		len, err := rs.Body.Read(tmpBuf)
-		buf.Write(tmpBuf[:len])
+		lng, err := rs.Body.Read(tmpBuf)
+		buf.Write(tmpBuf[:lng])
 		if err != nil {
 			break
 		}
@@ -203,4 +204,20 @@ func Search(text string) []MusicSearchResult {
 	var ans qqMusicSearchResults
 	json.Unmarshal(res, &ans)
 	return ans.Data.Song.List
+}
+
+// GetByURL 根据分享链接获取歌曲文件
+func GetByURL(URL string) {
+	reg, _ := regexp.Compile(`songid=\d+`)
+	ids := reg.FindAllString(URL, -1)
+	var id string
+	if len(ids) != 0 {
+		id = ids[0][7:]
+	} else {
+		fmt.Println("error: ", URL)
+		return
+	}
+	rs := GetSongURL(id, "320")
+	fmt.Println("开始下载", rs.SongName)
+	tool.Download(rs.SongURL, rs.SongName, "", true)
 }

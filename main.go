@@ -4,7 +4,6 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"regexp"
 	"strconv"
 	"strings"
 
@@ -64,44 +63,13 @@ func search(text string) {
 		num = nums
 		break
 	}
-	rss := result[num].GetURL(320)
-	fmt.Println(rss.SongURL)
-	tool.Download(rss.SongURL, result[num].GetFileName(), "")
-}
-
-func GetByNeteaseId(URL string) {
-	reg, _ := regexp.Compile(`\Wid=\d+`)
-	ids := reg.FindAllString(URL, -1)
-	var id string
-	if len(ids) == 0 {
-		tmp := strings.Split(URL, "/")
-		for _, i := range tmp {
-			if _, err := strconv.ParseInt(i, 10, 32); err == nil {
-				id = i
-				break
-			}
-		}
+	if num >= 0 && num < uint64(len(result)) {
+		rss := result[num].GetURL(320)
+		fmt.Println(rss.SongURL)
+		tool.Download(rss.SongURL, result[num].GetFileName(), "", true)
 	} else {
-		id = ids[0][4:]
+		panic("index out of range")
 	}
-	rs := netease.GetSongURL([]string{fmt.Sprint(id)}, 320)[0]
-	fmt.Println("开始下载:", rs.SongName)
-	tool.Download(rs.SongURL, rs.SongName, "")
-}
-
-func GetByQQId(URL string) {
-	reg, _ := regexp.Compile(`songid=\d+`)
-	ids := reg.FindAllString(URL, -1)
-	var id string
-	if len(ids) != 0 {
-		id = ids[0][7:]
-	} else {
-		fmt.Println("error: ", URL)
-		return
-	}
-	rs := qq.GetSongURL(id, "320")
-	fmt.Println("开始下载", rs.SongName)
-	tool.Download(rs.SongURL, rs.SongName, "")
 }
 
 func main() {
@@ -116,9 +84,9 @@ func main() {
 		search(keyword)
 	} else {
 		if strings.Contains(URL, "music.163.com") {
-			GetByNeteaseId(URL)
+			netease.GetByURL(URL)
 		} else if strings.Contains(URL, "qq.com") {
-			GetByQQId(URL)
+			qq.GetByURL(URL)
 		} else if strings.Contains(URL, "bilibili") {
 			if strings.Contains(URL, "video") {
 				bilibili.Deal(URL)

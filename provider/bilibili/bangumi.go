@@ -3,6 +3,7 @@ package bilibili
 import (
 	"encoding/json"
 	"fmt"
+	"os"
 	"regexp"
 	"strings"
 
@@ -163,7 +164,24 @@ func BangumiDeal(url string) {
 	fmt.Scan(&ind)
 	// ind := 0
 	if ind >= 0 && ind < len(rs) {
-		tmp := GetBangumiURL(rs[ind].Cid)[0]
-		tool.Download(tmp.URL, fmt.Sprintf("%s-%d", seasonID, tmp.Order), "")
+		tmp := GetBangumiURL(rs[ind].Cid)
+		if len(tmp) == 0 {
+			fmt.Println("get url error with length 0")
+			return
+		}
+		fmt.Println("has", len(tmp), "part(s)")
+		for _, j := range tmp {
+			tool.Download(j.URL, fmt.Sprintf("%s-%d", seasonID, j.Order), "", false)
+		}
+		if len(tmp) == 1 {
+			os.Rename(fmt.Sprintf("%s-%d", seasonID, 1),
+				fmt.Sprintf("%s-%d.flv", seasonID, ind))
+		} else {
+			var input []string
+			for i, _ := range tmp {
+				input = append(input, fmt.Sprintf("%s-%d", seasonID, i+1))
+			}
+			tool.MergeFLV(fmt.Sprintf("%s-%d.flv", seasonID, ind), input)
+		}
 	}
 }

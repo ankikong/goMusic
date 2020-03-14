@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"net/url"
 	"regexp"
+	"strconv"
 	"strings"
 
 	"github.com/ankikong/goMusic/provider/songbean"
@@ -252,4 +253,25 @@ func Search(text string) []SearchResult {
 		index++
 	}
 	return ansRet
+}
+
+// GetByURL 通过歌曲的分享链接下载
+func GetByURL(URL string) {
+	reg, _ := regexp.Compile(`\Wid=\d+`)
+	ids := reg.FindAllString(URL, -1)
+	var id string
+	if len(ids) == 0 {
+		tmp := strings.Split(URL, "/")
+		for _, i := range tmp {
+			if _, err := strconv.ParseInt(i, 10, 32); err == nil {
+				id = i
+				break
+			}
+		}
+	} else {
+		id = ids[0][4:]
+	}
+	rs := GetSongURL([]string{fmt.Sprint(id)}, 320)[0]
+	fmt.Println("开始下载:", rs.SongName)
+	tool.Download(rs.SongURL, rs.SongName, "", true)
 }

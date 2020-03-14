@@ -14,22 +14,24 @@ import (
 )
 
 // Download 下载url的文件到路径path
-func Download(url, name, path string) error {
+func Download(url, name, path string, inferExt bool) error {
 	path = strings.TrimSpace(path)
 	if len(path) == 0 {
 		path = "./"
 	} else if path[len(path)-1] != '/' {
 		path = path + "/"
 	}
-	exts := []string{"mp3", "flac", "acc", "flv", "mp4"}
-	var ext string
-	for _, j := range exts {
-		if strings.Contains(url, j) {
-			ext = j
-			break
+	if inferExt {
+		exts := []string{"mp3", "flac", "acc", "flv", "mp4"}
+		var ext string
+		for _, j := range exts {
+			if strings.Contains(url, j) {
+				ext = j
+				break
+			}
 		}
+		name = name + "." + ext
 	}
-	name = name + "." + ext
 	// reg, _ := regexp.Compile(`(/\|<>:*?")`)
 	for _, i := range `/\|<>:*?"` {
 		name = strings.ReplaceAll(name, string(i), " ")

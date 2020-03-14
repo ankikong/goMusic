@@ -20,5 +20,9 @@ func TestGetCID(t *testing.T) {
 }
 
 func TestDeal(t *testing.T) {
-	Deal("https://www.bilibili.com/video/av93895674")
+	Deal("https://www.bilibili.com/video/av73024231")
+}
+
+func TestGetVideoURL(t *testing.T) {
+	GetVideoURL("151454118")
 }

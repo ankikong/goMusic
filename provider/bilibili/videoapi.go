@@ -54,6 +54,7 @@ type bilibiliRet struct {
 }
 
 // GetVideoURL 根据所给CID获取视频链接
+// 目前测试,尚未发现视频会分块,所以就直接只返回第一个块的链接
 func GetVideoURL(CID string) string {
 	ps := fmt.Sprintf(params, CID, appkey)
 	ps = getSign(ps)
@@ -105,7 +106,7 @@ func Deal(url string) {
 		if ind, err := strconv.Atoi(i); err == nil && ind < len(cid) {
 			url := GetVideoURL(fmt.Sprint(cid[ind].CID))
 			fmt.Println(url)
-			tool.Download(url, fmt.Sprintf("%s-%d.%s", aid, ind, "flv"), "")
+			tool.Download(url, fmt.Sprintf("%s-%d.%s", aid, ind, "flv"), "", true)
 		} else {
 			fmt.Printf("error input, no a digit: \"%s\", skip", i)
 		}
