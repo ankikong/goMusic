@@ -22,7 +22,7 @@ func Download(url, name, path string, inferExt bool) error {
 		path = path + "/"
 	}
 	if inferExt {
-		exts := []string{"mp3", "flac", "acc", "flv", "mp4"}
+		exts := []string{".mp3", ".flac", ".acc", ".flv", ".mp4"}
 		var ext string
 		for _, j := range exts {
 			if strings.Contains(url, j) {

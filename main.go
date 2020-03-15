@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/ankikong/goMusic/provider/zzzfun"
 	"os"
 	"strconv"
 	"strings"
@@ -95,6 +96,8 @@ func main() {
 			} else {
 				fmt.Println("unsupport url")
 			}
+		} else if strings.Contains(URL, "www.zzzfun.com") {
+			zzzfun.GetByURL(URL)
 		}
 	}
 }
