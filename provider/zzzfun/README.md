@@ -7,8 +7,10 @@
 目前只测试了客户端的play url加密,网页端有点难搞.反编译一下客户端,很容易就能发现:
 
 ``` python
-sing=hashlib.md5((str(playID) + "534697").encode()).hexdigest()
+sing=hashlib.md5(("zandroidzz" + 时间戳).encode()).hexdigest()
 ```
+
+不过时间戳并没有校验是否过期,而且sing的取值和videoID的取值无关,所以可以直接把map和sing设为定值,如`map=1486876988464,sing=a47bdac30dd237e18f187cee332b3d2a`
 
 `videoID` 就是:`http://www.zzzfun.com/vod-detail-id-193.html` 中的`193`
 
