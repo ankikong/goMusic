@@ -10,6 +10,8 @@
 sing=hashlib.md5(("zandroidzz" + 时间戳).encode()).hexdigest()
 ```
 
+其中时间戳长度为11位整数,请求时填在`map`字段里
+
 不过时间戳并没有校验是否过期,而且sing的取值和videoID的取值无关,所以可以直接把map和sing设为定值,如`map=1486876988464,sing=a47bdac30dd237e18f187cee332b3d2a`
 
 `videoID` 就是:`http://www.zzzfun.com/vod-detail-id-193.html` 中的`193`
