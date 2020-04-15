@@ -4,12 +4,13 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/ankikong/goMusic/tool"
 	"log"
 	"net/http"
 	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/ankikong/goMusic/tool"
 
 	"github.com/ankikong/goMusic/provider/songbean"
 )
@@ -219,5 +220,5 @@ func GetByURL(URL string) {
 	}
 	rs := GetSongURL(id, "320")
 	fmt.Println("开始下载", rs.SongName)
-	tool.Download(rs.SongURL, rs.SongName, "", true)
+	tool.Download(rs.SongURL, rs.SongName, "", true, false)
 }

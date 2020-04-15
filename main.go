@@ -3,10 +3,11 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/ankikong/goMusic/provider/zzzfun"
 	"os"
 	"strconv"
 	"strings"
+
+	"github.com/ankikong/goMusic/provider/zzzfun"
 
 	"github.com/ankikong/goMusic/tool"
 
@@ -67,7 +68,7 @@ func search(text string) {
 	if num >= 0 && num < uint64(len(result)) {
 		rss := result[num].GetURL(320)
 		fmt.Println(rss.SongURL)
-		tool.Download(rss.SongURL, result[num].GetFileName(), "", true)
+		tool.Download(rss.SongURL, result[num].GetFileName(), "", true, false)
 	} else {
 		panic("index out of range")
 	}

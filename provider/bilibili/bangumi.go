@@ -171,14 +171,14 @@ func BangumiDeal(url string) {
 		}
 		fmt.Println("has", len(tmp), "part(s)")
 		for _, j := range tmp {
-			tool.Download(j.URL, fmt.Sprintf("%s-%d", seasonID, j.Order), "", false)
+			tool.Download(j.URL, fmt.Sprintf("%s-%d", seasonID, j.Order), "", false, false)
 		}
 		if len(tmp) == 1 {
 			os.Rename(fmt.Sprintf("%s-%d", seasonID, 1),
 				fmt.Sprintf("%s-%d.flv", seasonID, ind))
 		} else {
 			var input []string
-			for i, _ := range tmp {
+			for i := range tmp {
 				input = append(input, fmt.Sprintf("%s-%d", seasonID, i+1))
 			}
 			tool.MergeFLV(fmt.Sprintf("%s-%d.flv", seasonID, ind), input)

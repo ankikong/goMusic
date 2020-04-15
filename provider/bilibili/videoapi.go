@@ -106,7 +106,7 @@ func Deal(url string) {
 		if ind, err := strconv.Atoi(i); err == nil && ind < len(cid) {
 			url := GetVideoURL(fmt.Sprint(cid[ind].CID))
 			fmt.Println(url)
-			tool.Download(url, fmt.Sprintf("%s-%d.%s", aid, ind, "flv"), "", true)
+			tool.Download(url, fmt.Sprintf("%s-%d.%s", aid, ind, "flv"), "", true, false)
 		} else {
 			fmt.Printf("error input, no a digit: \"%s\", skip", i)
 		}

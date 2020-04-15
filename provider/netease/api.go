@@ -273,5 +273,5 @@ func GetByURL(URL string) {
 	}
 	rs := GetSongURL([]string{fmt.Sprint(id)}, 320)[0]
 	fmt.Println("开始下载:", rs.SongName)
-	tool.Download(rs.SongURL, rs.SongName, "", true)
+	tool.Download(rs.SongURL, rs.SongName, "", true, false)
 }

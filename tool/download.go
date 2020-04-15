@@ -14,7 +14,7 @@ import (
 )
 
 // Download 下载url的文件到路径path
-func Download(url, name, path string, inferExt bool) error {
+func Download(url, name, path string, inferExt bool, useAria bool) error {
 	path = strings.TrimSpace(path)
 	if len(path) == 0 {
 		path = "./"
@@ -30,15 +30,34 @@ func Download(url, name, path string, inferExt bool) error {
 				break
 			}
 		}
-		name = name + "." + ext
+		name = name + ext
+	}
+	if useAria {
+		data := `{
+            "jsonrpc": "2.0",
+            "method": "aria2.addUri",
+            "id": 1,
+            "params": [["` + url + `"],
+                {
+                    "max-connection-per-server": "16",
+                    "out": "` + name + `",
+                }
+            ]
+		}`
+		_, err := DoHTTP("POST", "http://127.0.0.1:6800/jsonrpc", data, "application/x-www-form-urlencoded; charset=UTF-8", "", "")
+		return err
 	}
 	// reg, _ := regexp.Compile(`(/\|<>:*?")`)
 	for _, i := range `/\|<>:*?"` {
 		name = strings.ReplaceAll(name, string(i), " ")
 	}
-
-	rs, err := http.Get(url)
-
+	req, _ := http.NewRequest("GET", url, nil)
+	req.Header.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.163 Safari/537.36")
+	req.Header.Add("Accept", "*/*")
+	req.Header.Add("Accept-Language", "zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7,zh-TW;q=0.6")
+	// rs, err := http.Get(url)
+	cli := &http.Client{}
+	rs, err := cli.Do(req)
 	if err != nil {
 		log.Println("download fail:", err.Error())
 		return err
